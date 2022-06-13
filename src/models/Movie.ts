@@ -1,11 +1,9 @@
-interface Genre {
-  _id: string;
-  name: string;
-}
+import Genre from './Genre';
 
 export default interface Movie {
   _id: string;
   title: string;
+  name?: string;
   genre: Genre;
   numberInStock: number;
   dailyRentalRate: number;

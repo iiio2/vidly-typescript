@@ -1,6 +1,8 @@
 import Like from '../common/like';
 import Movie from '../models/Movie';
 import Column from '../models/Column';
+import TableHeaderColumn from '../models/TableHeaderItem';
+import Table from '../common/table';
 
 interface MoviesTableProps {
   paginatedMovies: Movie[];
@@ -17,72 +19,38 @@ const MoviesTable = ({
   onSort,
   sortColumn,
 }: MoviesTableProps): JSX.Element => {
-  const raiseSort = (path: string) => {
-    const column = { ...sortColumn };
-    if (path === column.path) {
-      column.order = column.order === 'asc' ? 'desc' : 'asc';
-    } else {
-      column.path = path;
-      column.order = 'asc';
-    }
-    onSort(column);
-  };
+  const tableHeaderColumns: TableHeaderColumn[] = [
+    { path: 'title', label: 'Title' },
+    { path: 'genre.name', label: 'Genre' },
+    { path: 'numberInStock', label: 'Stock' },
+    { path: 'dailyRentalRate', label: 'Rate' },
+    {
+      path: 'like',
+      content: (movie: Movie) => (
+        <Like liked={movie.liked} onLike={() => onLike(movie)} />
+      ),
+    },
+    {
+      path: 'delete',
+      content: (movie: Movie) => (
+        <button
+          onClick={() => onDelete(movie)}
+          className='btn btn-danger btn-sm'
+        >
+          Delete
+        </button>
+      ),
+    },
+  ];
 
   return (
     <>
-      <table className='table table-striped'>
-        <thead>
-          <tr>
-            <th
-              style={{ cursor: 'pointer' }}
-              onClick={() => raiseSort('title')}
-            >
-              Title
-            </th>
-            <th
-              style={{ cursor: 'pointer' }}
-              onClick={() => raiseSort('genre.name')}
-            >
-              Genre
-            </th>
-            <th
-              style={{ cursor: 'pointer' }}
-              onClick={() => raiseSort('numberInStock')}
-            >
-              Stock
-            </th>
-            <th
-              style={{ cursor: 'pointer' }}
-              onClick={() => raiseSort('dailyRentalRate')}
-            >
-              Rate
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {movies.map((movie) => (
-            <tr key={movie._id}>
-              <td>{movie.title}</td>
-              <td>{movie.genre.name}</td>
-              <td>{movie.numberInStock}</td>
-              <td>{movie.dailyRentalRate}</td>
-              <td>
-                <Like liked={movie.liked} onLike={() => onLike(movie)} />
-              </td>
-              <td>
-                {' '}
-                <button
-                  onClick={() => onDelete(movie)}
-                  className='btn btn-danger btn-sm'
-                >
-                  Delete
-                </button>{' '}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Table
+        tableHeaderColumns={tableHeaderColumns}
+        sortColumn={sortColumn}
+        onSort={onSort}
+        data={movies}
+      />
     </>
   );
 };
